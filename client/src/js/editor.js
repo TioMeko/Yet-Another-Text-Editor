@@ -22,12 +22,19 @@ export default class {
       tabSize: 2,
     });
 
-    // When the editor is ready, set the value to whatever is stored in indexeddb.
+    // When the editor is ready, set the value to whatever is stored in indexed db.
     // Fall back to localStorage if nothing is stored in indexeddb, and if neither is available, set the value to header.
-    getDb().then((data) => {
-      console.info('Loaded data from IndexedDB, injecting into editor');
-      this.editor.setValue(data || localData || header);
-    });
+    getDb()
+      .then((data) => {
+        try {
+          this.editor.setValue(data.content || localData || header);
+        } catch (error) {
+          console.error(error);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
     this.editor.on('change', () => {
       localStorage.setItem('content', this.editor.getValue());
